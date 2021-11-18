@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane hgap="15.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1100.0" vgap="15.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+  <columnConstraints>
+    <ColumnConstraints hgrow="ALWAYS" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints vgrow="NEVER" />
+    <RowConstraints vgrow="NEVER" />
+    <RowConstraints vgrow="NEVER" />
+      <RowConstraints vgrow="ALWAYS" />
+      <RowConstraints vgrow="NEVER" />
+  </rowConstraints>
+   <children>
+      <Label text="Appointment Scheduling System">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+      </Label>
+      <Button cancelButton="true" mnemonicParsing="false" onAction="#onQuit" style="-fx-background-radius: 5px;" text="Quit" GridPane.halignment="LEFT" GridPane.rowIndex="4">
+         <padding>
+            <Insets bottom="10.0" left="30.0" right="30.0" top="10.0" />
+         </padding>
+      </Button>
+       <TabPane style="-fx-border-color: grey; -fx-border-style: solid; -fx-border-width: 2; -fx-border-insets: 3px; -fx-border-radius: 5px;" tabClosingPolicy="UNAVAILABLE" GridPane.rowIndex="3">
+           <tabs>
+               <Tab text="Customers">
+                   <content>
+                       <GridPane hgap="10.0" style="-fx-border-color: grey; -fx-border-style: solid; -fx-border-width: 2; -fx-border-insets: 3px; -fx-border-radius: 5px;" vgap="10.0" GridPane.rowIndex="1">
+                           <columnConstraints>
+                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                               <RowConstraints vgrow="NEVER" />
+                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                               <RowConstraints vgrow="NEVER" />
+                           </rowConstraints>
+                           <children>
+                               <Label text="Customers">
+                                   <font>
+                                       <Font name="System Bold" size="18.0" />
+                                   </font></Label>
+                               <TableView fx:id="customersTableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="1">
+                                   <columns>
+                                       <TableColumn fx:id="customerIdTableColumn" prefWidth="42.0" text="ID" />
+                                       <TableColumn fx:id="customerNameTableColumn" prefWidth="139.0" text="Name" />
+                                       <TableColumn fx:id="customerAddressTableColumn" prefWidth="150.0" text="Address" />
+                                       <TableColumn fx:id="customerPostalCodeTableColumn" prefWidth="93.0" text="Postal Code" />
+                                       <TableColumn fx:id="customerPhoneNumberTableColumn" minWidth="0.0" prefWidth="143.0" text="Phone" />
+                                       <TableColumn fx:id="customerDivisionNameTableColumn" minWidth="2.0" prefWidth="176.0" text="Division" />
+                                   </columns></TableView>
+                               <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onCustomerAdd" style="-fx-background-radius: 5px;" text="Add" GridPane.hgrow="NEVER" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
+                                   <padding>
+                                       <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
+                                   </padding>
+                               </Button>
+                               <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onCustomerModify" style="-fx-background-radius: 5px;" text="Modify" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
+                                   <padding>
+                                       <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
+                                   </padding>
+                               </Button>
+                               <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onCustomerDelete" style="-fx-background-radius: 5px;" text="Delete" GridPane.columnIndex="2" GridPane.hgrow="NEVER" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
+                                   <padding>
+                                       <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
+                                   </padding>
+                               </Button>
+                           </children>
+                           <padding>
+                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                       </GridPane>
+                   </content>
+               </Tab>
+               <Tab text="Appointments">
+                   <content>
+                                <GridPane hgap="10.0" style="-fx-border-color: grey; -fx-border-style: solid; -fx-border-width: 2; -fx-border-radius: 5px; -fx-border-insets: 3px;" vgap="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints vgrow="NEVER" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints vgrow="NEVER" />
+                                    </rowConstraints>
+                                    <children>
+                        <HBox spacing="20.0" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+                           <children>
+                              <RadioButton fx:id="appointmentsAllRadioButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onAppointmentsTimeframeToggle" text="All">
+                                  <toggleGroup>
+                                    <ToggleGroup fx:id="appointmentsTimeframeToggleGroup" />
+                                 </toggleGroup></RadioButton>
+                              <RadioButton fx:id="appointmentsWeeklyRadioButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onAppointmentsTimeframeToggle" selected="true" text="Weekly" toggleGroup="$appointmentsTimeframeToggleGroup" />
+                              <RadioButton fx:id="appointmentsMonthlyRadioButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onAppointmentsTimeframeToggle" text="Monthly" toggleGroup="$appointmentsTimeframeToggleGroup">
+                                 </RadioButton>
+                           </children>
+                        </HBox>
+                                        <Label text="Appointments">
+                                            <font>
+                                                <Font name="System Bold" size="18.0" />
+                                            </font></Label>
+                                        <TableView fx:id="appointmentsTableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="1">
+                                            <columns>
+                                                <TableColumn fx:id="appointmentIdTableColumn" prefWidth="31.0" text="ID" />
+                                                <TableColumn fx:id="appointmentTitleTableColumn" prefWidth="60.0" text="Title" />
+                                                <TableColumn fx:id="appointmentDescriptionTableColumn" prefWidth="113.0" text="Description" />
+                                                <TableColumn fx:id="appointmentLocationTableColumn" prefWidth="106.0" text="Location" />
+                                                <TableColumn fx:id="appointmentContactNameTableColumn" prefWidth="108.0" text="Contact" />
+                                                <TableColumn fx:id="appointmentTypeTableColumn" prefWidth="164.0" text="Type" />
+                                                <TableColumn fx:id="appointmentStartsAtTableColumn" prefWidth="143.0" text="Start" />
+                                                <TableColumn fx:id="appointmentEndsAtTableColumn" prefWidth="125.0" text="End" />
+                                                <TableColumn fx:id="customerIdColumn" prefWidth="102.0" text="Customer ID" />
+                                                <TableColumn fx:id="userIdColumn" prefWidth="74.0" text="User ID" />
+                                            </columns></TableView>
+                                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAppointmentAdd" style="-fx-background-radius: 5px;" text="Add" GridPane.hgrow="NEVER" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
+                                            <padding>
+                                                <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
+                                            </padding>
+                                        </Button>
+                                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAppointmentModify" style="-fx-background-radius: 5px;" text="Modify" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
+                                            <padding>
+                                                <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
+                                            </padding>
+                                        </Button>
+                                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAppointmentDelete" style="-fx-background-radius: 5px;" text="Delete" GridPane.columnIndex="2" GridPane.hgrow="NEVER" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
+                                            <padding>
+                                                <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
+                                            </padding>
+                                        </Button>
+                                    </children>
+                                    <padding>
+                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                    </padding>
+                                </GridPane>
+                   </content>
+               </Tab>
+               <Tab text="Reports">
+                   <content>
+                       <GridPane hgap="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-border-color: grey; -fx-border-width: 2px; -fx-border-style: solid; -fx-border-radius: 5px; -fx-border-insets: 3px;" vgap="10.0">
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints vgrow="ALWAYS" />
+                        <RowConstraints />
+                        <RowConstraints vgrow="ALWAYS" />
+                     </rowConstraints>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+                     </columnConstraints>
+                     <children>
+                        <Label text="Count by Month and Type" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER">
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <Label text="Count by Weekday and Type" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER">
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="countByMonthAndTypeTableView" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+                          <columns>
+                            <TableColumn fx:id="countByMonthAndTypeMonthTableColumn" prefWidth="188.0" text="Month" />
+                            <TableColumn fx:id="countByMonthAndTypeTypeTableColumn" prefWidth="212.0" text="Type" />
+                              <TableColumn fx:id="countByMonthAndTypeCountColumn" minWidth="0.0" prefWidth="103.0" text="Count" />
+                          </columns>
+                        </TableView>
+                        <TableView fx:id="countByWeekdayAndTypeTableView" layoutX="406.0" layoutY="56.0" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <columns>
+                              <TableColumn fx:id="countByWeekdayAndTypeWeekdayTableColumn" prefWidth="163.0" text="Weekday" />
+                              <TableColumn fx:id="countByWeekdayAndTypeTypeTableColumn" prefWidth="247.0" text="Type" />
+                              <TableColumn fx:id="countByWeekdayAndTypeCountTableColumn" prefWidth="92.0" text="Count" />
+                           </columns>
+                        </TableView>
+                        <TableView fx:id="contactAppointmentsTableView" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="3">
+                           <columns>
+                              <TableColumn fx:id="contactAppointmentIdTableColumn" prefWidth="31.0" text="ID" />
+                              <TableColumn fx:id="contactAppointmentTitleTableColumn" prefWidth="86.0" text="Title" />
+                              <TableColumn fx:id="contactAppointmentDescriptionTableColumn" prefWidth="131.0" text="Description" />
+                              <TableColumn fx:id="contactAppointmentLocationTableColumn" prefWidth="119.0" text="Location" />
+                              <TableColumn fx:id="contactAppointmentTypeTableColumn" prefWidth="170.0" text="Type" />
+                              <TableColumn fx:id="contactAppointmentStartsAtTableColumn" prefWidth="166.0" text="Start" />
+                              <TableColumn fx:id="contactAppointmentEndsAtTableColumn" prefWidth="161.0" text="End" />
+                              <TableColumn fx:id="contactCustomerIdColumn" prefWidth="100.0" text="Customer ID" />
+                              <TableColumn fx:id="contactUserIdColumn" prefWidth="60.0" text="User ID" />
+                           </columns>
+                        </TableView>
+                        <Label layoutX="406.0" layoutY="35.0" text="Contact Schedules" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                         <ChoiceBox fx:id="contactNameChoiceBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#onContactNameSelected" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding></GridPane>
+                   </content>
+               </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+   <padding>
+      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+   </padding>
+</GridPane>

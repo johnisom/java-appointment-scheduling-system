@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
+   <children>
+      <VBox spacing="10.0">
+         <children>
+            <StackPane>
+               <children>
+                  <Label fx:id="loginGreetingLabel1" />
+               </children>
+            </StackPane>
+            <StackPane>
+               <children>
+                  <Label fx:id="loginGreetingLabel2" />
+               </children>
+            </StackPane>
+            <StackPane>
+               <children>
+                  <Label fx:id="locationLabel" textFill="#8a8a8a" />
+               </children>
+            </StackPane>
+         </children>
+         <VBox.margin>
+            <Insets bottom="10.0" />
+         </VBox.margin>
+      </VBox>
+      <StackPane>
+         <children>
+            <TextField fx:id="usernameTextField" prefWidth="200.0" style="-fx-background-radius: 5px;" />
+         </children>
+      </StackPane>
+      <StackPane>
+         <children>
+            <PasswordField fx:id="passwordTextField" prefWidth="200.0" style="-fx-background-radius: 5px;" />
+         </children>
+      </StackPane>
+      <StackPane>
+         <children>
+            <HBox>
+               <children>
+                  <StackPane>
+                     <children>
+                        <Button fx:id="quitButton" cancelButton="true" mnemonicParsing="false" onAction="#onQuit" prefWidth="90.0" style="-fx-background-radius: 5px;">
+                           <StackPane.margin>
+                              <Insets right="20.0" />
+                           </StackPane.margin>
+                        </Button>
+                     </children>
+                  </StackPane>
+                  <StackPane>
+                     <children>
+                        <Button fx:id="submitButton" defaultButton="true" mnemonicParsing="false" onAction="#onSubmit" prefWidth="90.0" style="-fx-background-radius: 5px;">
+                           <StackPane.margin>
+                              <Insets />
+                           </StackPane.margin>
+                        </Button>
+                     </children>
+                  </StackPane>
+               </children>
+            </HBox>
+         </children>
+         <VBox.margin>
+            <Insets top="10.0" />
+         </VBox.margin>
+      </StackPane>
+   </children>
+   <padding>
+      <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+   </padding>
+</VBox>
