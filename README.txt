@@ -18,6 +18,7 @@ Running The Program
 2. Fill in the correct information to connect to the database in the src/helper/dbaccess/DBConnection.java file
    - Including host, port, username, etc.
 3. Run the "Main" configuration
+   - First create it if necessary, entry point is main.Main
 
 If you wish to try out French or English, you can either change the language of the operating system, or head over
 to the src/helper/locale/LocaleHelper.java file and edit the `setCurrentLocale` method to hard code a locale
