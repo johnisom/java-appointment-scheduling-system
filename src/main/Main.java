@@ -11,8 +11,17 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * The main class that invokes the main function. The entry point of the application.
+ * @see #main(String[])
+ */
 public class Main extends Application {
 
+    /**
+     * Runs the JavaFX application by opening a connection to the database, launching the JavaFX application,
+     * then closing the connection to the database when the JavaFX application has ended.
+     * @param args command line arguments.
+     */
     public static void main(String[] args) {
         DBConnection.openConnection();
         launch(args);

@@ -11,34 +11,67 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Optional;
 
+/**
+ * The DAO object/class that is used to perform all database operations pertaining to the User model.
+ * @see User
+ */
 public abstract class DBUser {
+    /**
+     * The maximum number of times an operation can be retried before giving up.
+     */
     private static final int maxRetries = 3;
 
+    /**
+     * The name of the schema in the database.
+     */
     private static final String schemaName = "client_schedule";
+    /**
+     * The name of the table in the database.
+     */
     private static final String userTableName = "users";
+    /**
+     * The name of the id column  in the database.
+     */
     private static final String userIdColumnName = "User_ID";
+    /**
+     * The name of the username column in the database.
+     */
     private static final String userUsernameColumnName = "User_Name";
+    /**
+     * The name of the password column in the database.
+     */
     private static final String userPasswordColumnName = "Password";
+    /**
+     * The name of the time of creation in the database.
+     */
     private static final String userCreatedAtColumnName = "Create_Date";
+    /**
+     * The name of the time of last update in the database.
+     */
     private static final String userUpdatedAtColumnName = "Last_Update";
+    /**
+     * The name of the method of creation in the database.
+     */
     private static final String userCreatedByColumnName = "Created_By";
+    /**
+     * The name of the method of last creation in the database.
+     */
     private static final String userUpdatedByColumnName = "Last_Updated_By";
 
+    /**
+     * The SQL template for grabbing all users.
+     */
     private static final String selectAllUsersSQL = String.format("SELECT * FROM %s.%s;", schemaName, userTableName);
-    private static final String updateUserSQL = String.format("UPDATE %s.%s SET %s = ?, %s = ?, %s = ?, %s = NOW(), %s = ?, %s = 'desktop-app' WHERE %s = ?;",
-            schemaName,
-            userTableName,
-            userUsernameColumnName,
-            userPasswordColumnName,
-            userCreatedAtColumnName,
-            userUpdatedAtColumnName,
-            userCreatedByColumnName,
-            userUpdatedByColumnName,
-            userIdColumnName);
+    /**
+     * The SQL template for finding a single user given just the id.
+     */
     private static final String findUserSQL = String.format("SELECT * FROM %s.%s WHERE %s = ? LIMIT 1;",
             schemaName,
             userTableName,
             userIdColumnName);
+    /**
+     * The SQL template for finding a single user given username and password.
+     */
     private static final String findUserByUsernameAndPasswordSQL = String.format("SELECT * FROM %s.%s WHERE %s = ? AND %s = ? LIMIT 1;",
             schemaName,
             userTableName,
@@ -46,6 +79,10 @@ public abstract class DBUser {
             userPasswordColumnName);
 
 
+    /**
+     * Grabs all users from the database.
+     * @return the users.
+     */
     public static ObservableList<User> getAllUsers() {
         ObservableList<User> allUsers = FXCollections.observableArrayList();
 
@@ -74,32 +111,11 @@ public abstract class DBUser {
         return allUsers;
     }
 
-    public static boolean updateUser(User user) {
-        for (int count = 0; count < maxRetries; ++count) {
-            try {
-                PreparedStatement ps = DBConnection.getConnection().prepareStatement(updateUserSQL);
-                ps.setString(1, user.getUsername());
-                ps.setString(2, user.getPassword());
-//                ps.setTimestamp(3, Timestamp.from(user.getCreatedAt()));
-                ps.setTimestamp(3, Timestamp.from(user.getUpdatedAt()));
-//                ps.setString(5, user.getCreatedBy());
-                ps.setString(4, user.getUpdatedBy());
-                ps.setInt(5, user.getId());
-                return ps.execute();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (DBConnection.ConnectionNotOpen e) {
-                e.printStackTrace();
-                if (DBConnection.openConnection()) {
-                    continue;
-                }
-
-                return false;
-            }
-        }
-        return false;
-    }
-
+    /**
+     * Given an id, grabs the associated user from the database.
+     * @param userId the user id.
+     * @return the user.
+     */
     public static Optional<User> getUserFromId(int userId) {
         for (int count = 0; count < maxRetries; ++count) {
             try {
@@ -125,6 +141,12 @@ public abstract class DBUser {
         return Optional.empty();
     }
 
+    /**
+     * Given a username and a password, grabs the associated user from the database.
+     * @param username the user username.
+     * @param password the user password.
+     * @return the user.
+     */
     public static Optional<User> getUserFromUsernameAndPassword(String username, String password) {
         for (int count = 0; count < maxRetries; ++count) {
             try {
@@ -152,6 +174,12 @@ public abstract class DBUser {
         return Optional.empty();
     }
 
+    /**
+     * Given a result set that is in the middle of being used, build a user with the current row.
+     * @param rs the ResultSet.
+     * @return the new User model object.
+     * @throws SQLException if extracting fields fails.
+     */
     private static User buildUser(ResultSet rs) throws SQLException {
         int userId = rs.getInt(userIdColumnName);
         String userUsername = rs.getString(userUsernameColumnName);

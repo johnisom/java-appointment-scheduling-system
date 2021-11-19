@@ -17,7 +17,14 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * The customer form controller that displays all the editable fields a blank, new customer or an already-filled-out, existing customer.
+ * Validates all data given by user and refuses to save if data is not valid.
+ */
 public class CustomerFormController implements Initializable {
+    /**
+     * Represents the creation of a new customer or the editing of an existing customer.
+     */
     private enum CustomerOperation { CREATE, EDIT }
 
     /**
@@ -45,6 +52,11 @@ public class CustomerFormController implements Initializable {
     public TextField postalCodeTextField;
     public TextField phoneNumberTextField;
 
+    /**
+     * Initializes the CustomerFormController.
+     * @param url the URL
+     * @param resourceBundle the ResourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         countriesNameToIdMap.clear();
@@ -55,10 +67,17 @@ public class CustomerFormController implements Initializable {
         }
     }
 
+    /**
+     * Invoked by the MainController when the "Add" button is clicked, and sets the fields &amp; labels accordingly.
+     */
     public void addNewCustomer() {
         customerLabel.setText("New Customer");
     }
 
+    /**
+     * Invoked by the MainController when the "Modify" button is clicked, and sets the fields &amp; labels + currentCustomerOperation accordingly.
+     * @param existingCustomer the customer that should be edited.
+     */
     public void editExistingCustomer(Customer existingCustomer) {
         this.customer = existingCustomer;
         this.currentCustomerOperation = CustomerOperation.EDIT;
@@ -112,6 +131,10 @@ public class CustomerFormController implements Initializable {
         return userResponse.isPresent() && userResponse.get() == ButtonType.OK;
     }
 
+    /**
+     * Invoked when a country (U.K., Candaa, or U.S.) is selected from the countryNameChoiceBox.
+     * It re-enables the divisionNameChoiceBox and populates it with the divisions for the selected country.
+     */
     public void onCountrySelected() {
         String selectedCountryName = countryNameChoiceBox.getSelectionModel().getSelectedItem();
         Integer selectedCountryId = countriesNameToIdMap.get(selectedCountryName);
@@ -130,6 +153,10 @@ public class CustomerFormController implements Initializable {
         }
     }
 
+    /**
+     * Invoked when the escape key is hit or the "Cancel" button is pressed, and closes the modal and doesn't make any changes if the action is confirmed by the user.
+     * @see #showConfirmationAlert(String, String)
+     */
     public void onCancel() {
         boolean shouldDiscardChanges = showConfirmationAlert("Discard Changes?", "Any changes made will be lost if you continue. Are you sure?");
         if (shouldDiscardChanges) {
@@ -137,6 +164,15 @@ public class CustomerFormController implements Initializable {
         }
     }
 
+    /**
+     * Invoked when the "Save" button is pressed, and closes the modal after saving the customer after validating the user input.
+     * @see #checkFields() 
+     * @see #updateCustomer() 
+     * @see #createCustomer() 
+     * @see MainController#updateCustomer(Customer) 
+     * @see MainController#addCustomer(Customer) 
+     * @see #showErrorAlert(String, String)
+     */
     public void onSave() {
         try {
             checkFields();
@@ -156,20 +192,40 @@ public class CustomerFormController implements Initializable {
         }
     }
 
+    /**
+     * Applies the fields to a new customer model and saves to the database.
+     * <br>
+     * The lambda allows us to use 1 line of code to assign the returned Optional&lt;Customer&gt; if it is present.
+     * This saves 2 lines of code.
+     * @see #applyFieldsToCustomer()
+     * @see DBCustomer
+     */
     private void createCustomer() {
         customer = new Customer();
         applyFieldsToCustomer();
         Optional<Customer> foundCustomer = DBCustomer.createCustomer(customer);
-        foundCustomer.ifPresent(value -> customer = value); // TODO: document this lambda
+        foundCustomer.ifPresent(value -> customer = value);
     }
 
+    /**
+     * Applies the fields to the customer model and saves changes to the database.
+     * <br>
+     * The lambda allows us to use 1 line of code to assign the returned Optional&lt;Customer&gt; if it is present.
+     * This saves 2 lines of code.
+     * @see #applyFieldsToCustomer()
+     * @see DBCustomer
+     */
     private void updateCustomer() {
         applyFieldsToCustomer();
         DBCustomer.updateCustomer(customer);
         Optional<Customer> foundCustomer = DBCustomer.getCustomerFromId(customer.getId());
-        foundCustomer.ifPresent(value -> customer = value); // TODO: document this lambda
+        foundCustomer.ifPresent(value -> customer = value);
     }
 
+    /**
+     * Takes all the user-input values in the form fields and sets the appropriate attributes in the customer model.
+     * @see #customer
+     */
     private void applyFieldsToCustomer() {
         customer.setDivisionId(divisionsNameToIdMap.get(divisionNameChoiceBox.getSelectionModel().getSelectedItem()));
         customer.setName(nameTextField.getText());
@@ -178,6 +234,10 @@ public class CustomerFormController implements Initializable {
         customer.setPhoneNumber(phoneNumberTextField.getText());
     }
 
+    /**
+     * Checks the user input and verifies that no fields are blank.
+     * @throws FieldBlankException If any field is blank.
+     */
     private void checkFields() throws FieldBlankException {
         String rawDivisionName = divisionNameChoiceBox.getSelectionModel().getSelectedItem();
         String rawName = nameTextField.getText();

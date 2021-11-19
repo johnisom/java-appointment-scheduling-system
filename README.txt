@@ -19,9 +19,18 @@ Running The Program
    - Including host, port, username, etc.
 3. Run the "Main" configuration
 
+If you wish to try out French or English, you can either change the language of the operating system, or head over
+to the src/helper/locale/LocaleHelper.java file and edit the `setCurrentLocale` method to hard code a locale
+rather than using the system default.
+
 Additional Report Info
 ----------------------
 
 The additional report that I added as part of rubric requirement A3f reports out the number of appointments by
 day of week (Sunday, Monday, etc) and by type of report. It is similar to the month & type report described by
 rubric requirement A3f, first bullet point.
+
+JavaDoc
+-------
+
+JavaDoc can be fund in the doc/ directory.

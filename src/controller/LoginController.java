@@ -18,6 +18,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * The login controller that displays the log-in form and displays the main page if the correct credentials are entered.
+ * This form is translated to either French or English, depending on the user's computer locale.
+ */
 public class LoginController implements Initializable {
     public static final String desiredStageTitle = LocaleHelper.getTranslation("loginStageTitle");
     public static final String viewFilename = "Login.fxml";
@@ -34,6 +38,11 @@ public class LoginController implements Initializable {
 
     private User loggedInUser;
 
+    /**
+     * Initializes the LoginController.
+     * @param url the URL
+     * @param resourceBundle the ResourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loginGreetingLabel1.setText(LocaleHelper.getTranslation("loginGreeting1"));
@@ -45,6 +54,10 @@ public class LoginController implements Initializable {
         quitButton.setText(LocaleHelper.getTranslation("quitButtonPrompt"));
     }
 
+    /**
+     * When a user successfully logs in, initializes the main view + controller and closes the currentStage.
+     * @throws IOException if the view file cannot be found.
+     */
     private void showMainPage() throws IOException {
         Stage mainStage = new Stage();
         FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("/view/" + MainController.viewFilename)));
@@ -60,10 +73,20 @@ public class LoginController implements Initializable {
         currentStage.close();
     }
 
+    /**
+     * Shows an error alert that alerts the user that the login credentials they entered are invalid.
+     * @see #showErrorAlert(String, String) 
+     */
     private void showInvalidLoginMessage() {
         showErrorAlert(LocaleHelper.getTranslation("invalidLoginAlertTitle"), LocaleHelper.getTranslation("invalidLoginAlertContent"));
     }
 
+    /**
+     * A generic helper method that shows an error alert given the title and content.
+     *
+     * @param title the text that is displayed on the alert window's title and in the header section
+     * @param content the text that is displayed in the body of the alert
+     */
     private void showErrorAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -73,20 +96,37 @@ public class LoginController implements Initializable {
         alert.show();
     }
 
+    /**
+     * Invoked when the "Quit" button or escape button is pressed.
+     */
     public void onQuit() {
         currentStage.close();
     }
 
+    /**
+     * Invoked when the "Submit" button in the log-in form is clicked, and authenticates the user.
+     * Displays main page if login credentials are correct.
+     * @throws IOException if the view file cannot be found.
+     * @see #showMainPage()
+     */
     public void onSubmit() throws IOException {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
         Optional<User> optionalUser = DBUser.getUserFromUsernameAndPassword(username, password);
         if (optionalUser.isPresent()) {
-            LoginActivityLogger.logAttempt(username, true);
+            try {
+                LoginActivityLogger.logAttempt(username, true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             loggedInUser = optionalUser.get();
             showMainPage();
         } else {
-            LoginActivityLogger.logAttempt(username, false);
+            try {
+                LoginActivityLogger.logAttempt(username, false);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             showInvalidLoginMessage();
             usernameTextField.clear();
             passwordTextField.clear();

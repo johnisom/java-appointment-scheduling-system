@@ -17,46 +17,116 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The DAO object/class that is used to perform all database operations pertaining to the Appointment model.
+ * @see Appointment
+ */
 public abstract class DBAppointment {
+    /**
+     * The maximum number of times an operation can be retried before giving up.
+     */
     private static final int maxRetries = 3;
 
+    /**
+     * The name of the schema in the database.
+     */
     public static final String schemaName = "client_schedule";
+    /**
+     * The name of the table in the database.
+     */
     public static final String appointmentTableName = "appointments";
+    /**
+     * The name of the id column in the database.
+     */
     public static final String appointmentIdColumnName = "Appointment_ID";
+    /**
+     * The name of the contact id column in the database.
+     */
     public static final String contactIdColumnName = "Contact_ID";
+    /**
+     * The name of the customer id column in the database.
+     */
     public static final String customerIdColumnName = "Customer_ID";
+    /**
+     * The name of the user id column in the database.
+     */
     public static final String userIdColumnName = "User_ID";
+    /**
+     * The name of the title column in the database.
+     */
     public static final String appointmentTitleColumnName = "Title";
+    /**
+     * The name of the description column in the database.
+     */
     public static final String appointmentDescriptionColumnName = "Description";
+    /**
+     * The name of the location column in the database.
+     */
     public static final String appointmentLocationColumnName = "Location";
+    /**
+     * The name of the type column in the database.
+     */
     public static final String appointmentTypeColumnName = "Type";
+    /**
+     * The name of the starting time column in the database.
+     */
     public static final String appointmentStartsAtColumnName = "Start";
+    /**
+     * The name of the ending time column in the database.
+     */
     public static final String appointmentEndsAtColumnName = "End";
+    /**
+     * The name of the time of creation column in the database.
+     */
     public static final String appointmentCreatedAtColumnName = "Create_Date";
+    /**
+     * The name of the time of last update column in the database.
+     */
     public static final String appointmentUpdatedAtColumnName = "Last_Update";
+    /**
+     * The name of the method of creation column in the database.
+     */
     public static final String appointmentCreatedByColumnName = "Created_By";
+    /**
+     * The name of the method of last update column in the database.
+     */
     public static final String appointmentUpdatedByColumnName = "Last_Updated_By";
 
+    /**
+     * The SQL template for grabbing all appointments.
+     */
     private static final String selectAllAppointmentsSQL = String.format("SELECT * FROM %s.%s ORDER BY %s ASC;",
             schemaName,
             appointmentTableName,
             appointmentStartsAtColumnName);
+    /**
+     * The SQL template for grabbing all appointments related to a contact.
+     */
     private static final String selectAppointmentsForContactId = String.format("SELECT * FROM %s.%s WHERE %s = ? ORDER BY %s ASC;",
             schemaName,
             appointmentTableName,
             contactIdColumnName,
             appointmentStartsAtColumnName);
+    /**
+     * The SQL template for grabbing all appointments within a time range.
+     */
     private static final String selectAppointmentsWithinTimeRangeSQL = String.format("SELECT * FROM %s.%s WHERE %s BETWEEN ? AND ? ORDER BY %s ASC;",
             schemaName,
             appointmentTableName,
             appointmentStartsAtColumnName,
             appointmentStartsAtColumnName);
+    /**
+     * The SQL template for grabbing all appointments within a time range and related to a user.
+     */
     private static final String selectAppointmentsWithinTimeRangeWithUserIdSQL = String.format("SELECT * FROM %s.%s WHERE %s = ? AND %s BETWEEN ? AND ? ORDER BY %s ASC;",
             schemaName,
             appointmentTableName,
             userIdColumnName,
             appointmentStartsAtColumnName,
             appointmentStartsAtColumnName);
+    /**
+     * The SQL template for grabbing all appointments overlapping with a given start and end time.
+     */
     private static final String selectAppointmentsOverlappingWithTimeRangeSQL = String.format("SELECT * FROM %s.%s WHERE %s > ? AND %s < ? OR %s > ? AND %s < ? OR %s <= ? AND %s >= ? ORDER BY %s ASC;",
             schemaName,
             appointmentTableName,
@@ -67,6 +137,9 @@ public abstract class DBAppointment {
             appointmentStartsAtColumnName,
             appointmentEndsAtColumnName,
             appointmentStartsAtColumnName);
+    /**
+     * The SQL template for updating a single appointment.
+     */
     private static final String updateAppointmentSQL = String.format("UPDATE %s.%s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = NOW(), %s = ?, %s = 'desktop-app' WHERE %s = ?;",
             schemaName,
             appointmentTableName,
@@ -84,6 +157,9 @@ public abstract class DBAppointment {
             appointmentCreatedByColumnName,
             appointmentUpdatedByColumnName,
             appointmentIdColumnName);
+    /**
+     * The SQL template for creating a single appointment.
+     */
     private static final String createAppointmentSQL = String.format("INSERT INTO %s.%s(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), 'desktop-app', 'desktop-app');",
             schemaName,
             appointmentTableName,
@@ -100,14 +176,23 @@ public abstract class DBAppointment {
             appointmentUpdatedAtColumnName,
             appointmentCreatedByColumnName,
             appointmentUpdatedByColumnName);
+    /**
+     * The SQL template for deleting a single appointment given just the id..
+     */
     private static final String deleteAppointmentSQL = String.format("DELETE FROM %s.%s WHERE %s = ?",
             schemaName,
             appointmentTableName,
             appointmentIdColumnName);
+    /**
+     * The SQL template for finding a single appointment given jus the id.
+     */
     private static final String findAppointmentSQL = String.format("SELECT * FROM %s.%s WHERE %s = ?",
             schemaName,
             appointmentTableName,
             appointmentIdColumnName);
+    /**
+     * The SQL template for generating the count by month and type report.
+     */
     private static final String getAppointmentsCountByMonthAndTypeSQL = String.format("SELECT MONTHNAME(%s) AS month, %s, COUNT(%s) AS count FROM %s.%s GROUP BY MONTHNAME(%s), %s;",
             appointmentStartsAtColumnName,
             appointmentTypeColumnName,
@@ -116,6 +201,9 @@ public abstract class DBAppointment {
             appointmentTableName,
             appointmentStartsAtColumnName,
             appointmentTypeColumnName);
+    /**
+     * The SQL template for generating the count by weekday and type report.
+     */
     private static final String getAppointmentsCountByWeekdayAndTypeSQL = String.format("SELECT DAYNAME(%s) AS weekday, %s, COUNT(%s) AS count FROM %s.%s GROUP BY DAYNAME(%s), %s;",
             appointmentStartsAtColumnName,
             appointmentTypeColumnName,
@@ -126,6 +214,10 @@ public abstract class DBAppointment {
             appointmentTypeColumnName);
 
 
+    /**
+     * Grabs all appointments from the database.
+     * @return the appointments.
+     */
     public static ObservableList<Appointment> getAllAppointments() {
         ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
 
@@ -154,6 +246,11 @@ public abstract class DBAppointment {
         return allAppointments;
     }
 
+    /**
+     * Given a contact id, grabs all associated appointments from the database.
+     * @param contactId the contact id.
+     * @return the appointments.
+     */
     public static ObservableList<Appointment> getAllAppointmentsForContactId(int contactId) {
         ObservableList<Appointment> appointmentsForContactId = FXCollections.observableArrayList();
 
@@ -181,6 +278,12 @@ public abstract class DBAppointment {
         return appointmentsForContactId;
     }
 
+    /**
+     * Given a time range, grabs all appointments that start within that time range.
+     * @param from the starting time of the time range.
+     * @param to the ending time of the time range.
+     * @return the appointments.
+     */
     public static ObservableList<Appointment> getAllAppointmentsStartingWithinTimeRange(Instant from, Instant to) {
         ObservableList<Appointment> appointmentsStartingWithinTimeRange = FXCollections.observableArrayList();
 
@@ -210,6 +313,13 @@ public abstract class DBAppointment {
         return appointmentsStartingWithinTimeRange;
     }
 
+    /**
+     * Given a time range and user id, grabs all appointments associated with that user that start within that time range.
+     * @param from the starting time of the time range.
+     * @param to the ending time of the time range.
+     * @param userId the user id.
+     * @return the appointments.
+     */
     public static ObservableList<Appointment> getAllAppointmentsStartingWithinTimeRangeForUserId(Instant from, Instant to, int userId) {
         ObservableList<Appointment> appointmentsStartingWithinTimeRange = FXCollections.observableArrayList();
 
@@ -240,6 +350,12 @@ public abstract class DBAppointment {
         return appointmentsStartingWithinTimeRange;
     }
 
+    /**
+     * Given a time range, grabs all appointments that overlap with the given time range.
+     * @param startsAt the starting time of the time range.
+     * @param endsAt the ending time of the time range.
+     * @return the appointments.
+     */
     public static ObservableList<Appointment> getAllAppointmentsOverlappingWithTimeRange(Instant startsAt, Instant endsAt) {
         ObservableList<Appointment> appointmentsOverlappingWithTimeRange = FXCollections.observableArrayList();
         Timestamp startsAtTimestamp = Timestamp.from(startsAt);
@@ -274,24 +390,41 @@ public abstract class DBAppointment {
         return appointmentsOverlappingWithTimeRange;
     }
 
+    /**
+     * Grabs all appointments that start within the next 1 month.
+     * @return the appointments.
+     */
     public static ObservableList<Appointment> getAllAppointmentsStartingWithinNextMonth() {
         Instant now = Instant.now();
         Instant in1Month = now.atOffset(ZoneOffset.UTC).plusMonths(1).toInstant();
         return getAllAppointmentsStartingWithinTimeRange(now, in1Month);
     }
 
+    /**
+     * Grabs all appointments that start within the next 1 week.
+     * @return the appointments.
+     */
     public static ObservableList<Appointment> getAllAppointmentsStartingWithinNextWeek() {
         Instant now = Instant.now();
         Instant in1Week = now.atOffset(ZoneOffset.UTC).plusWeeks(1).toInstant();
         return getAllAppointmentsStartingWithinTimeRange(now, in1Week);
     }
 
+    /**
+     * Given a user id, grabs all appointments associated with that user that start within the next 15 minutes.
+     * @param userId the user id.
+     * @return hr appointments.
+     */
     public static ObservableList<Appointment> getAppointmentsStartingWithinNext15MinsForUserId(int userId) {
         Instant now = Instant.now();
         Instant in15Minutes = now.atOffset(ZoneOffset.UTC).plusMinutes(15).toInstant();
         return getAllAppointmentsStartingWithinTimeRangeForUserId(now, in15Minutes, userId);
     }
 
+    /**
+     * Grabs the month, type, and count of appointments grouped by month &amp; type for a report.
+     * @return the report data.
+     */
     public static ObservableList<List<StringProperty>> getAppointmentsCountByMonthAndType() {
         ObservableList<List<StringProperty>> result = FXCollections.observableArrayList();
         for (int count = 0; count < maxRetries; ++count) {
@@ -319,6 +452,10 @@ public abstract class DBAppointment {
         return result;
     }
 
+    /**
+     * Grabs the weekday, type, and count of appointments grouped by month &amp; type for a report.
+     * @return the report data.
+     */
     public static ObservableList<List<StringProperty>> getAppointmentsCountByWeekdayAndType() {
         ObservableList<List<StringProperty>> result = FXCollections.observableArrayList();
         for (int count = 0; count < maxRetries; ++count) {
@@ -346,6 +483,11 @@ public abstract class DBAppointment {
         return result;
     }
 
+    /**
+     * Updates an appointment record in the database given an appointment model.
+     * @param appointment the appointment with the fields populated.
+     * @return true if the appointment was updated, false if there was an issue.
+     */
     public static boolean updateAppointment(Appointment appointment) {
         for (int count = 0; count < maxRetries; ++count) {
             try {
@@ -377,6 +519,11 @@ public abstract class DBAppointment {
         return false;
     }
 
+    /**
+     * Creates an appointment record in the database given an appointment model.
+     * @param appointment the appointment with the fields populated.
+     * @return true if the appointment was created, false if there was an issue.
+     */
     public static Optional<Appointment> createAppointment(Appointment appointment) {
         for (int count = 0; count < maxRetries; ++count) {
             try {
@@ -410,6 +557,11 @@ public abstract class DBAppointment {
         return Optional.empty();
     }
 
+    /**
+     * Deletes an appointment record from the database given an appointment id.
+     * @param appointmentId the appointment id.
+     * @return true if the appointment was deleted, false if there was an issue.
+     */
     public static boolean deleteAppointmentFromId(int appointmentId) {
         for (int count = 0; count < maxRetries; ++count) {
             try {
@@ -430,6 +582,11 @@ public abstract class DBAppointment {
         return false;
     }
 
+    /**
+     * Given an id, grabs the associated appointment from the database.
+     * @param id the id.
+     * @return the appointment.
+     */
     public static Optional<Appointment> getAppointmentFromId(int id) {
         for (int count = 0; count < maxRetries; ++count) {
             try {
@@ -455,6 +612,12 @@ public abstract class DBAppointment {
         return Optional.empty();
     }
 
+    /**
+     * Given a result set that is in the middle of being used, build an appointment with the current row.
+     * @param rs the ResultSet.
+     * @return the new Appointment model object.
+     * @throws SQLException if extracting fields fails.
+     */
     private static Appointment buildAppointment(ResultSet rs) throws SQLException {
         int appointmentId = rs.getInt(appointmentIdColumnName);
         int contactId = rs.getInt(contactIdColumnName);

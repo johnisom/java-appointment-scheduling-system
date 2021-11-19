@@ -25,7 +25,14 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+/**
+ * The appointment form controller that displays all the editable fields a blank, new appointment or an already-filled-out, existing appointment.
+ * Validates all data given by user and refuses to save if data is not valid.
+ */
 public class AppointmentFormController implements Initializable {
+    /**
+     * Represents the creation of a new appointment or the editing of an existing appointment.
+     */
     private enum AppointmentOperation { CREATE, EDIT }
 
     /**
@@ -34,11 +41,19 @@ public class AppointmentFormController implements Initializable {
     private static class FieldBlankException extends Exception {}
 
     /**
-     * The exception that is thrown if either the startsAt or endsAt time for the appointment are out of bounds for office hours.
+     * The exception that is thrown if an appointment already exists that would interfere with
+     * this appointment's date &amp; time.
      */
     private static class ConflictingAppointmentTimeException extends Throwable {}
-    private static class EndTimeIsBeforeStartTimeException extends Throwable {} // TODO: document
-    private static class OutsideOfOfficeHoursException extends Throwable {} // TODO: document
+
+    /**
+     * The exception that is thrown if the end time is before the start time.
+     */
+    private static class EndTimeIsBeforeStartTimeException extends Throwable {}
+    /**
+     * The exception that is thrown if either the startsAt or endsAt time for the appointment are out of bounds for office hours.
+     */
+    private static class OutsideOfOfficeHoursException extends Throwable {}
 
     public static final String viewFilename = "AppointmentForm.fxml";
     public static final String desiredStageTitle = "Appointment";
@@ -67,6 +82,11 @@ public class AppointmentFormController implements Initializable {
     public TextField startsAtTimeTextField;
     public TextField endsAtTimeTextField;
 
+    /**
+     * Initializes the AppointmentFormController.
+     * @param url the URL
+     * @param resourceBundle the ResourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         contactsNameToIdMap.clear();
@@ -89,10 +109,17 @@ public class AppointmentFormController implements Initializable {
         }
     }
 
+    /**
+     * Invoked by the MainController when the "Add" button is clicked, and sets the fields &amp; labels accordingly.
+     */
     public void addNewAppointment() {
         appointmentLabel.setText("New Appointment");
     }
 
+    /**
+     * Invoked by the MainController when the "Modify" button is clicked, and sets the fields &amp; labels + currentAppointmentOperation accordingly.
+     * @param existingAppointment the appointment that should be edited.
+     */
     public void editExistingAppointment(Appointment existingAppointment) {
         this.appointment = existingAppointment;
         this.currentAppointmentOperation = AppointmentOperation.EDIT;
@@ -114,6 +141,7 @@ public class AppointmentFormController implements Initializable {
             e.printStackTrace();
         }
     }
+
     /**
      * A generic helper method that shows an error alert given the title and content.
      *
@@ -148,6 +176,10 @@ public class AppointmentFormController implements Initializable {
         return userResponse.isPresent() && userResponse.get() == ButtonType.OK;
     }
 
+    /**
+     * Invoked when the escape key is hit or the "Cancel" button is pressed, and closes the modal and doesn't make any changes if the action is confirmed by the user.
+     * @see #showConfirmationAlert(String, String)
+     */
     public void onCancel() {
         boolean shouldDiscardChanges = showConfirmationAlert("Discard Changes?", "Any changes made will be lost if you continue. Are you sure?");
         if (shouldDiscardChanges) {
@@ -155,6 +187,15 @@ public class AppointmentFormController implements Initializable {
         }
     }
 
+    /**
+     * Invoked when the "Save" button is pressed, and closes the modal after saving the appointment after validating the user input.
+     * @see #checkFields()
+     * @see #updateAppointment()
+     * @see #createAppointment()
+     * @see MainController#updateAppointment()
+     * @see MainController#addAppointment()
+     * @see #showErrorAlert(String, String)
+     */
     public void onSave() {
         try {
             checkFields();
@@ -194,20 +235,40 @@ public class AppointmentFormController implements Initializable {
         }
     }
 
+    /**
+     * Applies the fields to a new appointment model and saves to the database.
+     * <br>
+     * The lambda allows us to use 1 line of code to assign the returned Optional&lt;Appointment&gt; if it is present.
+     * This saves 2 lines of code.
+     * @see #applyFieldsToAppointment()
+     * @see DBAppointment
+     */
     private void createAppointment() {
         appointment = new Appointment();
         applyFieldsToAppointment();
         Optional<Appointment> foundAppointment = DBAppointment.createAppointment(appointment);
-        foundAppointment.ifPresent(value -> appointment = value); // TODO: document this lambda
+        foundAppointment.ifPresent(value -> appointment = value);
     }
 
+    /**
+     * Applies the fields to the appointment model and saves changes to the database
+     * <br>
+     * The lambda allows us to use 1 line of code to assign the returned Optional&lt;Appointment&gt; if it is present.
+     * This saves 2 lines of code.
+     * @see #appointment
+     * @see DBAppointment
+     */
     private void updateAppointment() {
         applyFieldsToAppointment();
         DBAppointment.updateAppointment(appointment);
         Optional<Appointment> foundAppointment = DBAppointment.getAppointmentFromId(appointment.getId());
-        foundAppointment.ifPresent(value -> appointment = value); // TODO: document this lambda
+        foundAppointment.ifPresent(value -> appointment = value);
     }
 
+    /**
+     * Takes all the user-input values in the form fields and sets the appropriate attributes in the appointment model.
+     * @see #appointment
+     */
     private void applyFieldsToAppointment() {
         String title = titleTextField.getText();
         String description = descriptionTextField.getText();
@@ -239,7 +300,26 @@ public class AppointmentFormController implements Initializable {
         appointment.setEndsAt(endsAtInstant);
     }
 
-    private void checkFields() throws FieldBlankException, ConflictingAppointmentTimeException, EndTimeIsBeforeStartTimeException, OutsideOfOfficeHoursException {
+    /**
+     * Checks the user input and verifies that:
+     * <ul>
+     * <li>no fields are blank;</li>
+     * <li>the time values are formatted correctly;</li>
+     * <li>the starting time is before the ending time;</li>
+     * <li>the appointment times do not conflict with another appointment; or</li>
+     * <li>the appointment is within office hours.</li>
+     * </ul>
+     * <br>
+     * The lambda in this method removes the current appointment from the list of conflicting appointments.
+     * This is necessary if an appointment is being edited, as an appointment has the possibility of having
+     * its new times conflict with its old times.
+     * @throws FieldBlankException if any fields are blank.
+     * @throws DateTimeParseException if either of the time values are formatted incorrectly.
+     * @throws EndTimeIsBeforeStartTimeException if the starting time is not before the ending time.
+     * @throws ConflictingAppointmentTimeException if the appointment times conflict with another appointment.
+     * @throws OutsideOfOfficeHoursException if the appointment goes outside of office hours.
+     */
+    private void checkFields() throws FieldBlankException, DateTimeParseException, EndTimeIsBeforeStartTimeException, ConflictingAppointmentTimeException, OutsideOfOfficeHoursException {
         String rawTitle = titleTextField.getText();
         String rawDescription = descriptionTextField.getText();
         String rawLocation = locationTextField.getText();
@@ -268,7 +348,7 @@ public class AppointmentFormController implements Initializable {
         Instant endsAtInstant = appointmentDate.atTime(endsAtOffsetTime).toInstant();
         conflictingAppointments.setAll(DBAppointment.getAllAppointmentsOverlappingWithTimeRange(startsAtInstant, endsAtInstant));
         if (appointment != null) {
-            conflictingAppointments.removeIf(appt -> appt.getId() == appointment.getId()); // TODO: document this lambda
+            conflictingAppointments.removeIf(appt -> appt.getId() == appointment.getId());
         }
         if (!conflictingAppointments.isEmpty()) {
             throw new ConflictingAppointmentTimeException();

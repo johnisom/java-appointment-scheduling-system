@@ -12,23 +12,72 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Optional;
 
+/**
+ * The DAO object/class that is used to perform all database operations pertaining to the Customer model.
+ * @see Customer
+ */
 public abstract class DBCustomer {
+    /**
+     * The maximum number of times an operation can be retried before giving up.
+     */
     private static final int maxRetries = 3;
 
+    /**
+     * The name of the schema in the database.
+     */
     private static final String schemaName = "client_schedule";
+    /**
+     * The name of the table in the database.
+     */
     private static final String customerTableName = "customers";
+    /**
+     * The name of the id column in the database.
+     */
     private static final String customerIdColumnName = "Customer_ID";
+    /**
+     * The name of the division id column in the database.
+     */
     private static final String divisionIdColumnName = "Division_ID";
+    /**
+     * The name of the name column in the database.
+     */
     private static final String customerNameColumnName = "Customer_Name";
+    /**
+     * The name of the address column in the database.
+     */
     private static final String customerAddressColumnName = "Address";
+    /**
+     * The name of the postal code column in the database.
+     */
     private static final String customerPostalCodeColumnName = "Postal_Code";
+    /**
+     * The name of the phone number column in the database.
+     */
     private static final String customerPhoneNumberColumnName = "Phone";
+    /**
+     * The name of the created at column in the database.
+     */
     private static final String customerCreatedAtColumnName = "Create_Date";
+    /**
+     * The name of the updated at column in the database.
+     */
     private static final String customerUpdatedAtColumnName = "Last_Update";
+    /**
+     * The name of the created by column in the database.
+     */
     private static final String customerCreatedByColumnName = "Created_By";
+    /**
+     * The name of the updated by column in the database.
+     */
     private static final String customerUpdatedByColumnName = "Last_Updated_By";
 
+    /**
+     * The SQL template for grabbing all customers.
+     */
     private static final String selectAllCustomersSQL = String.format("SELECT * FROM %s.%s;", schemaName, customerTableName);
+    /**
+     * The SQL template for updating a single customer.
+     */
     private static final String updateCustomerSQL = String.format("UPDATE %s.%s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = NOW(), %s = ?, %s = 'desktop-app' WHERE %s = ?;",
             schemaName,
             customerTableName,
@@ -42,6 +91,9 @@ public abstract class DBCustomer {
             customerCreatedByColumnName,
             customerUpdatedByColumnName,
             customerIdColumnName);
+    /**
+     * The SQL template for creating a single customer.
+     */
     private static final String createCustomerSQL = String.format("INSERT INTO %s.%s(%s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, NOW(), NOW(), 'desktop-app', 'desktop-app');",
             schemaName,
             customerTableName,
@@ -54,15 +106,25 @@ public abstract class DBCustomer {
             customerUpdatedAtColumnName,
             customerCreatedByColumnName,
             customerUpdatedByColumnName);
+    /**
+     * The SQL template for deleting a single customer.
+     */
     private static final String deleteCustomerSQL = String.format("DELETE FROM %s.%s WHERE %s = ?",
             schemaName,
             customerTableName,
             customerIdColumnName);
+    /**
+     * The SQL template for finding a single customer given just the id.
+     */
     private static final String findCustomerSQL = String.format("SELECT * FROM %s.%s WHERE %s = ?",
             schemaName,
             customerTableName,
             customerIdColumnName);
 
+    /**
+     * Grabs all customers from the database.
+     * @return the customers.
+     */
     public static ObservableList<Customer> getAllCustomers() {
         ObservableList<Customer> allCustomers = FXCollections.observableArrayList();
 
@@ -91,6 +153,11 @@ public abstract class DBCustomer {
         return allCustomers;
     }
 
+    /**
+     * Creates a customer record in the database given a customer model.
+     * @param customer the customer with the fields populated.
+     * @return a new Customer model that has the latest after the creation.
+     */
     public static Optional<Customer> createCustomer(Customer customer) {
         for (int count = 0; count < maxRetries; ++count) {
             try {
@@ -120,6 +187,11 @@ public abstract class DBCustomer {
         return Optional.empty();
     }
 
+    /**
+     * Updates a customer record in the database given a customer model.
+     * @param customer the customer with the fields populated.
+     * @return true if the customer was updated, false if there was an issue.
+     */
     public static boolean updateCustomer(Customer customer) {
         for (int count = 0; count < maxRetries; ++count) {
             try {
@@ -146,6 +218,11 @@ public abstract class DBCustomer {
         return false;
     }
 
+    /**
+     * Deletes a customer record from the database given a customer id.
+     * @param customerId the customer id.
+     * @return true if the customer was deleted, false if there was an issue.
+     */
     public static boolean deleteCustomerFromId(int customerId) {
         for (int count = 0; count < maxRetries; ++count) {
             try {
@@ -166,6 +243,11 @@ public abstract class DBCustomer {
         return false;
     }
 
+    /**
+     * Given an id, grabs the associated customer from the database.
+     * @param customerId the customer id.
+     * @return the customer.
+     */
     public static Optional<Customer> getCustomerFromId(int customerId) {
         for (int count = 0; count < maxRetries; ++count) {
             try {
@@ -191,6 +273,12 @@ public abstract class DBCustomer {
         return Optional.empty();
     }
 
+    /**
+     * Given a result set that is in the middle of being used, build a customer with the current row.
+     * @param rs the ResultSet.
+     * @return the new Customer model object.
+     * @throws SQLException if extracting fields fails.
+     */
     private static Customer buildCustomer(ResultSet rs) throws SQLException {
         int customerId = rs.getInt(customerIdColumnName);
         int divisionId = rs.getInt(divisionIdColumnName);
