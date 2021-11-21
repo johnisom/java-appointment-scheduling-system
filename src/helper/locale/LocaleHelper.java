@@ -109,8 +109,8 @@ public abstract class LocaleHelper {
     }
 
     /**
-     * Gets the country of the currentLocale, formatted in a displayable manner.
-     * @return the name fo the country.
+     * Gets the country name and time zone name of the currentLocale and currentZoneI, formatted for display.
+     * @return country name + time zone as a string.
      */
     public static String getLocation() {
         return String.format("%s, %s", getLocale().getDisplayCountry(), getZoneId().getDisplayName(TextStyle.FULL, getLocale()));
