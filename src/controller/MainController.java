@@ -494,7 +494,8 @@ public class MainController implements Initializable {
         if (appointment != null) {
             boolean shouldDeleteAppointment = showConfirmationAlert("Delete Appointment?",
                     "Are you sure you want to permanently delete the appointment (having title \"" +
-                            appointment.getTitle() + "\" and id " + appointment.getId() + ")?");
+                            appointment.getTitle() + "\" and id " + appointment.getId() + " and type \"" +
+                            appointment.getType() +  "\")?");
             if (shouldDeleteAppointment) {
                 if (DBAppointment.deleteAppointmentFromId(appointment.getId())) {
                     appointmentsTableView.getItems().remove(appointment);
