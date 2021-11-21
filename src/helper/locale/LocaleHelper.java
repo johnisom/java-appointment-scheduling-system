@@ -5,6 +5,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -112,7 +113,7 @@ public abstract class LocaleHelper {
      * @return the name fo the country.
      */
     public static String getLocation() {
-        return getLocale().getDisplayCountry();
+        return String.format("%s, %s", getLocale().getDisplayCountry(), getZoneId().getDisplayName(TextStyle.FULL, getLocale()));
     }
 
     /**

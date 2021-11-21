@@ -47,7 +47,7 @@ public class LoginController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loginGreetingLabel1.setText(LocaleHelper.getTranslation("loginGreeting1"));
         loginGreetingLabel2.setText(LocaleHelper.getTranslation("loginGreeting2"));
-        locationLabel.setText(LocaleHelper.getTranslation("yourLocationLabel") + " " + LocaleHelper.getLocation());
+        locationLabel.setText(LocaleHelper.getTranslation("yourLocationLabel") + "\n" + LocaleHelper.getLocation());
         usernameTextField.setPromptText(LocaleHelper.getTranslation("usernameFieldPrompt"));
         passwordTextField.setPromptText(LocaleHelper.getTranslation("passwordFieldPrompt"));
         submitButton.setText(LocaleHelper.getTranslation("submitButtonPrompt"));
