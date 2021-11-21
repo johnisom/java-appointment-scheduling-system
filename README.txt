@@ -6,7 +6,10 @@ A JavaFX and MYSQL application written by John Isom for WGU's Software II course
 The purpose of this application is to manage customers and appointments for Nameless Corp, LLC, including scheduling
 functionalities.
 
+Application Version: v0.0.1
 Author: John Isom, Student ID: 001069136
+Email Address :jisom4@wgu.edu
+Date: 2021-10-20 / November 20, 2021
 IDE: IntelliJ IDEA 2021.2.1 (Community Edition)
 Java: Java SE JDK 11.0.12, JavaFX SDK 11.0.2
 MYSQL driver: mysql-connector-java-8.0.26
